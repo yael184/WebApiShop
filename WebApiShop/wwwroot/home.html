@@ -1,0 +1,50 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <script defer src="home.js"></script>
+    <link rel="stylesheet" href="style.css">
+    <title></title>
+</head>
+<body>
+    
+    <div class="container">
+        <h1>Login</h1>
+            <div class="form-group">
+                <label for="lusername">Username:</label>
+                <input type="email" id="lusername" name="lusername" >
+            </div>
+            <div class="form-group">
+                <label for="lpassword">Password:</label>
+                <input type="password" id="lpassword" name="lpassword" >
+            </div>
+            <button onclick="login()">Login</button>
+        <div class="register-link">
+            Don't have an account yet?
+            <a onclick="reg()">Register</a>
+        </div>
+    </div>
+
+    <div class="container reg">
+        <h1>Register</h1>
+        
+            <div class="form-group">
+                <label for="username">Username:</label>
+                <input type="email" id="userName" name="username" >
+            </div>
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" >
+            </div>
+            <div class="form-group">
+                <label for="FirstName">FirstName:</label>
+                <input type="text" id="firstName" name="FirstName" >
+            </div>
+            <div class="form-group">
+                <label for="LastName">LastName:</label>
+                <input type="text" id="lastName" name="LastName" >
+            </div>
+            <button id="registerButton" onclick="register()"> Register</button>
+    </div>
+</body>
+</html>
