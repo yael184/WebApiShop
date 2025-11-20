@@ -30,7 +30,7 @@ async function Update() {
         FirstName,
         LastName
     };  
-    const response = await fetch( `api/Users/${user.id}`, {
+    const response = await fetch( `../api/Users/${user.id}`, {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json'
@@ -42,8 +42,9 @@ async function Update() {
         alert("Somesing went wrong.");
         return;
     }
-    sessionStorage.setItem('user', JSON.stringify(updateData));
+    sessionStorage.setItem('user', JSON.stringify(data));
     alert("Details Updated successfully.")
 }
+
 
 

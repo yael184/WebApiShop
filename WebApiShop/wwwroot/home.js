@@ -71,3 +71,18 @@ function reg() {
     reg.style.display = "block";
 
 }
+
+
+async function checkPassword() {
+    data = document.querySelector('#password').value;
+    const response = await fetch("api/Passwords", {
+        method : 'POST',
+        headers: {
+            "Content-Type": 'application/json'
+        },
+        body: JSON.stringify(data)
+    })
+    level = await response.json();
+    document.querySelector("progress").style.display = "block";
+    document.querySelector("progress").value = level;
+}

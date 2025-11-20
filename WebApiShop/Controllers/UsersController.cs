@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics.Metrics;
 using System.Text.Json;
+using Services;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -11,9 +12,11 @@ namespace WebApiShop.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
-        //static List<User> users = new List<User> { };
-        //static int Counter = 0;
-        const string _filePath = @"../WebApiShop/Users.txt";
+        public UsersController(IUsersService _usersService)
+        {
+            this._usersService = _usersService;
+        }
+        IUsersService _usersService;
 
         // GET: api/<UsersController>
         [HttpGet]
@@ -27,71 +30,45 @@ namespace WebApiShop.Controllers
         [HttpGet("{id}")]
         public ActionResult<User> Get(int id)
         {
-
-            using (StreamReader reader = System.IO.File.OpenText(_filePath))
+            User? user = _usersService.GetUserById(id);
+            if (user != null)
             {
-                string? currentUserInFile;
-                while ((currentUserInFile = reader.ReadLine()) != null)
-                {
-                    User user = JsonSerializer.Deserialize<User>(currentUserInFile);
-                    if (user.Id == id)
-                        return Ok(user);
-                }
+                return Ok(user);
             }
-            return NotFound();
-
+            return NoContent();
         }
 
         // POST api/<UsersController>
         [HttpPost]
         public ActionResult<User> Post([FromBody] User user)
         {
-            int numberOfUsers = System.IO.File.ReadLines(_filePath).Count();
-            user.Id = numberOfUsers + 1;
-            string userJson = JsonSerializer.Serialize(user);
-            System.IO.File.AppendAllText(_filePath, userJson + Environment.NewLine);
+            user = _usersService.CreateUser(user);
+            if (user == null)
+                return BadRequest();
             return CreatedAtAction(nameof(Get), new { id = user.Id }, user);
         }
 
         [HttpPost("login")]
         public ActionResult<User> Post1([FromBody] User loggedUser)
         {
-
-            using (StreamReader reader = System.IO.File.OpenText(_filePath))
-            {
-                string? currentUserInFile;
-                while ((currentUserInFile = reader.ReadLine()) != null)
-                {
-                    User user = JsonSerializer.Deserialize<User>(currentUserInFile);
-                    if (user.UserName == loggedUser.UserName && user.Password == loggedUser.Password)
-                        return CreatedAtAction(nameof(Get), new { user.Id }, user);
-                }
-            }
+            User? user = _usersService.Login(loggedUser);
+            if (user != null)
+                return CreatedAtAction(nameof(Get), new { user.Id }, user);
             return NoContent();
         }
 
         // PUT api/<UsersController>/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] User loggedUser)
+        public ActionResult Put(int id, [FromBody] User user)
         {
-            string textToReplace = string.Empty;
-            using (StreamReader reader = System.IO.File.OpenText(_filePath))
+            try 
             {
-                string currentUserInFile;
-                while ((currentUserInFile = reader.ReadLine()) != null)
-                {
-
-                    User user = JsonSerializer.Deserialize<User>(currentUserInFile);
-                    if (user.Id == id)
-                        textToReplace = currentUserInFile;
-                }
+                _usersService.UpdateUser(id, user);
+                return Ok();
             }
-
-            if (textToReplace != string.Empty)
+            catch (Exception e)
             {
-                string text = System.IO.File.ReadAllText(_filePath);
-                text = text.Replace(textToReplace, JsonSerializer.Serialize(loggedUser));
-                System.IO.File.WriteAllText(_filePath, text);
+                return BadRequest(e.Message);
             }
         }
 
