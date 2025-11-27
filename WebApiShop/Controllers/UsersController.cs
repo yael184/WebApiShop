@@ -12,11 +12,14 @@ namespace WebApiShop.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
-        public UsersController(IUsersService _usersService)
+        private readonly IUsersService _usersService;
+        private readonly IPasswordsService _passwordsService;
+
+        public UsersController(IUsersService usersService, IPasswordsService passwordsService)
         {
-            this._usersService = _usersService;
+            _usersService = usersService;
+            _passwordsService = passwordsService;
         }
-        IUsersService _usersService;
 
         // GET: api/<UsersController>
         [HttpGet]
@@ -35,16 +38,20 @@ namespace WebApiShop.Controllers
             {
                 return Ok(user);
             }
-            return NoContent();
+            return NotFound();
         }
 
         // POST api/<UsersController>
         [HttpPost]
         public ActionResult<User> Post([FromBody] User user)
         {
+            int passwordLevel = _passwordsService.passwordValidation(user.Password);
+            if (passwordLevel < 3)
+                return BadRequest($"Password too weak (score: {passwordLevel}/4). Minimum required: 3");
+
             user = _usersService.CreateUser(user);
             if (user == null)
-                return BadRequest();
+                return BadRequest("Failed to create user");
             return CreatedAtAction(nameof(Get), new { id = user.Id }, user);
         }
 
@@ -53,23 +60,20 @@ namespace WebApiShop.Controllers
         {
             User? user = _usersService.Login(loggedUser);
             if (user != null)
-                return CreatedAtAction(nameof(Get), new { user.Id }, user);
-            return NoContent();
+                return Ok(user);
+            return Unauthorized("Invalid username or password");
         }
 
         // PUT api/<UsersController>/5
         [HttpPut("{id}")]
         public ActionResult Put(int id, [FromBody] User user)
         {
-            try 
-            {
-                _usersService.UpdateUser(id, user);
-                return Ok();
-            }
-            catch (Exception e)
-            {
-                return BadRequest(e.Message);
-            }
+            int passwordLevel = _passwordsService.passwordValidation(user.Password);
+            if (passwordLevel < 3)
+                return BadRequest($"Password too weak (score: {passwordLevel}/4). Minimum required: 3");
+
+            _usersService.UpdateUser(id, user);
+            return NoContent();
         }
 
         // DELETE api/<UsersController>/5

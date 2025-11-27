@@ -19,9 +19,6 @@ namespace Services
 
         public User? CreateUser(User user)
         {
-            int Level = passwordsService.passwordValidation(user.Password);
-            if (Level < 3)
-                return null;
             return repository.CreateUser(user);
         }
         public User? Login(User loggedUser)
@@ -30,9 +27,6 @@ namespace Services
         }
         public void UpdateUser(int id, User user)
         {
-            int Level = passwordsService.passwordValidation(user.Password);
-            if (Level < 3)
-                throw new("Password is too weak");
             repository.UpdateUser(id, user);
         }
     }
