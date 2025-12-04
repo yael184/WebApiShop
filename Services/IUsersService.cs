@@ -1,12 +1,14 @@
-﻿using WebApiShop;
+﻿using Entities;
+
 
 namespace Services
 {
     public interface IUsersService
     {
-        User? CreateUser(User user);
-        User? GetUserById(int id);
-        User? Login(User loggedUser);
-        void UpdateUser(int id, User user);
+        Task<IEnumerable<User>> GetUsers();
+        Task<User?> CreateUser(User user);
+        Task<User?> GetUserById(int id);
+        Task<User?> Login(User loggedUser);
+        Task UpdateUser(int id, User user);
     }
 }

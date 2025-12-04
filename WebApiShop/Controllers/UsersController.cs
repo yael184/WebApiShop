@@ -2,6 +2,8 @@
 using System.Diagnostics.Metrics;
 using System.Text.Json;
 using Services;
+using Entities;
+using System.Threading.Tasks;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -12,25 +14,25 @@ namespace WebApiShop.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
-        public UsersController(IUsersService _usersService)
-        {
-            this._usersService = _usersService;
-        }
         IUsersService _usersService;
+        public UsersController(IUsersService usersService)
+        {
+            this._usersService = usersService;
+        }
 
         // GET: api/<UsersController>
         [HttpGet]
-        public IEnumerable<string> Get()
+        public async Task<IEnumerable<User>> Get()
         {
             
-            return new string[] { "value1", "value2" };
+            return await _usersService.GetUsers();
         }
 
         // GET api/<UsersController>/5
         [HttpGet("{id}")]
-        public ActionResult<User> Get(int id)
+        public async Task<ActionResult<User>> Get(int id)
         {
-            User? user = _usersService.GetUserById(id);
+            User? user = await _usersService.GetUserById(id);
             if (user != null)
             {
                 return Ok(user);
@@ -40,18 +42,18 @@ namespace WebApiShop.Controllers
 
         // POST api/<UsersController>
         [HttpPost]
-        public ActionResult<User> Post([FromBody] User user)
+        public async Task<ActionResult<User>> Post([FromBody] User user)
         {
-            user = _usersService.CreateUser(user);
+            User? _user =  await _usersService.CreateUser(user);
             if (user == null)
                 return BadRequest();
             return CreatedAtAction(nameof(Get), new { id = user.Id }, user);
         }
 
         [HttpPost("login")]
-        public ActionResult<User> Post1([FromBody] User loggedUser)
+        public async Task<ActionResult<User>> Post1([FromBody] User loggedUser)
         {
-            User? user = _usersService.Login(loggedUser);
+            User? user = await _usersService.Login(loggedUser);
             if (user != null)
                 return CreatedAtAction(nameof(Get), new { user.Id }, user);
             return NoContent();
@@ -59,11 +61,11 @@ namespace WebApiShop.Controllers
 
         // PUT api/<UsersController>/5
         [HttpPut("{id}")]
-        public ActionResult Put(int id, [FromBody] User user)
+        public async Task<ActionResult> Put(int id, [FromBody] User user)
         {
             try 
             {
-                _usersService.UpdateUser(id, user);
+                await _usersService.UpdateUser(id, user);
                 return Ok();
             }
             catch (Exception e)

@@ -1,6 +1,6 @@
 ﻿using Repository;
 using System.Net.Security;
-using WebApiShop;
+using Entities;
 namespace Services
 {
     public class UsersService : IUsersService
@@ -12,28 +12,34 @@ namespace Services
         }
         IUsersRepository repository;
         IPasswordsService passwordsService;
-        public User? GetUserById(int id)
+
+        public async Task<IEnumerable<User>> GetUsers()
         {
-            return repository.GetUserById(id);
+            return await repository.GetUsers();//ToList();
         }
 
-        public User? CreateUser(User user)
+        public async Task<User?> GetUserById(int id)
+        {
+            return await repository.GetUserById(id);
+        }
+
+        public async Task<User?> CreateUser(User user)
         {
             int Level = passwordsService.passwordValidation(user.Password);
             if (Level < 3)
                 return null;
-            return repository.CreateUser(user);
+            return await repository.CreateUser(user);
         }
-        public User? Login(User loggedUser)
+        public async Task<User?> Login(User loggedUser)
         {
-            return repository.Login(loggedUser);
+            return await repository.Login(loggedUser);
         }
-        public void UpdateUser(int id, User user)
+        public async Task UpdateUser(int id, User user)
         {
             int Level = passwordsService.passwordValidation(user.Password);
             if (Level < 3)
                 throw new("Password is too weak");
-            repository.UpdateUser(id, user);
+            await repository.UpdateUser(id, user);
         }
     }
 }

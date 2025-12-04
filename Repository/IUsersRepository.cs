@@ -1,12 +1,12 @@
-﻿using WebApiShop;
-
+﻿using Entities;
 namespace Repository
 {
     public interface IUsersRepository
     {
-        User CreateUser(User user);
-        User? GetUserById(int id);
-        User? Login(User loggedUser);
-        void UpdateUser(int id, User loggedUser);
+        Task<IEnumerable<User>> GetUsers();
+        Task<User> CreateUser(User user);
+        Task<User?> GetUserById(int id);
+        Task<User?> Login(User loggedUser);
+        Task UpdateUser(int id, User loggedUser);
     }
 }

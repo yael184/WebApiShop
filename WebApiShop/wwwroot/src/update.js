@@ -20,11 +20,13 @@ title.textContent = title.textContent + user.firstName;
 
 
 async function Update() {
+    Id = user.id;
     UserName = document.querySelector('#username').value;
     Password = document.querySelector('#password').value;
     FirstName = document.querySelector('#FirstName').value;
     LastName = document.querySelector('#LastName').value;
     const data = {
+        Id,
         UserName,
         Password,
         FirstName,
