@@ -45,9 +45,9 @@ namespace WebApiShop.Controllers
         public async Task<ActionResult<User>> Post([FromBody] User user)
         {
             User? _user =  await _usersService.CreateUser(user);
-            if (user == null)
+            if (_user == null)
                 return BadRequest();
-            return CreatedAtAction(nameof(Get), new { id = user.Id }, user);
+            return CreatedAtAction(nameof(Get), new { id = user.UserId }, user);
         }
 
         [HttpPost("login")]
@@ -55,7 +55,7 @@ namespace WebApiShop.Controllers
         {
             User? user = await _usersService.Login(loggedUser);
             if (user != null)
-                return CreatedAtAction(nameof(Get), new { user.Id }, user);
+                return CreatedAtAction(nameof(Get), new { user.UserId }, user);
             return NoContent();
         }
 
